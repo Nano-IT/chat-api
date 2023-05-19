@@ -1,0 +1,1 @@
+export const GROUP_USER_PROFILE = 'GROUP_USER_PROFILE';

@@ -1,0 +1,26 @@
+name: Deploy DEV
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  check:
+    uses: Nano-IT/workflows/.github/workflows/check.yml@v1
+
+  build-dev:
+    needs: check
+    uses: Nano-IT/workflows/.github/workflows/build-static.yml@v1
+
+  deploy-dev:
+    needs: build-dev
+    uses: Nano-IT/workflows/.github/workflows/build.yml@v1
+    secrets: inherit
+    with:
+      file: "codedeploy/Dockerfile"
+
+  update-services-dev:
+    needs: deploy-dev
+    uses: Nano-IT/workflows/.github/workflows/update-services.yml@v1
+    secrets: inherit
