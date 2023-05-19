@@ -17,7 +17,7 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('docs', app, document);
+  SwaggerModule.setup('api/docs', app, document);
 
   app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
 
@@ -33,6 +33,7 @@ async function bootstrap() {
   app.enableCors({
     origin: '*',
   });
+  app.setGlobalPrefix('api/v1');
   await app.listen(3000);
 }
 bootstrap();
