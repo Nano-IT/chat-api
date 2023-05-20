@@ -29,8 +29,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       `${request.method} ${request.url}`,
     );
 
-    console.log(exception);
-
     let status;
 
     switch (exception.constructor) {
