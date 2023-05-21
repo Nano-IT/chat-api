@@ -8,7 +8,7 @@ import {
   Patch,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ChatService } from '../chat.service';
+import { ChatService } from '../services/chat.service';
 import { MessageService } from '@/message/message.service';
 import { CreateMessageDto } from '@/message/dto/create-message.dto';
 import { RequestUser } from '@/shared/decorators/request-user.decorator';

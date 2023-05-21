@@ -37,7 +37,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
         message = (exception as HttpException).message;
         break;
       case QueryFailedError: // this is a TypeOrm error
-        status = HttpStatus.UNPROCESSABLE_ENTITY;
+        status = HttpStatus.BAD_REQUEST;
         message = (exception as QueryFailedError).message;
         code = (exception as any).code;
         break;
