@@ -6,6 +6,8 @@ import { ValidationExceptionFilter } from './shared/filters/validation.filter';
 import { ValidationException } from './shared/exceptions/validation.exception';
 import { GlobalExceptionFilter } from '@/shared/filters/global-error-handler.filter';
 import { HttpExceptionFilter } from '@/shared/filters/http-exception.filter';
+import { ChatEvents } from '@/chat/types/chatEvents';
+import { ChatMessageEvents } from '@/message/types/chatMessageEvents';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -27,9 +29,24 @@ async function bootstrap() {
     origin: '*',
   });
 
+  const socketEvents = [
+    ...Object.values(ChatEvents),
+    ...Object.values(ChatMessageEvents),
+  ].join(', ');
+
   const config = new DocumentBuilder()
-    .setTitle('API example')
-    .setDescription('The API description')
+    .setTitle('Chat API')
+    .setDescription(
+      `Chat uses <a target="_blank" href="https://socket.io/">Socket.IO</a>. For handling connections emit join event and pass userId as payload.<br>
+        Example: 
+        <pre>import { io } from "socket.io-client";<br>
+        const socket = io("ws://example.com/my-namespace");
+        socket.emit("join", 2); // where 2 is current user id</pre>
+      <br> 
+      <br> 
+      <h2>Socket events: </h2>
+      <pre>${socketEvents}</pre> `,
+    )
     .setVersion('1.0')
     .addBearerAuth()
     .build();
