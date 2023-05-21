@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Param } from '@nestjs/common';
-import { MessageService } from './message.service';
+import { MessageService } from './services/message.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { RequestUser } from '@/shared/decorators/request-user.decorator';
 import { User } from '@/user/entities/user.entity';

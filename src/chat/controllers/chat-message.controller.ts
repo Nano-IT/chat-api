@@ -9,7 +9,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ChatService } from '../services/chat.service';
-import { MessageService } from '@/message/message.service';
+import { MessageService } from '@/message/services/message.service';
 import { CreateMessageDto } from '@/message/dto/create-message.dto';
 import { RequestUser } from '@/shared/decorators/request-user.decorator';
 import { User } from '@/user/entities/user.entity';

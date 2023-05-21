@@ -1,17 +1,21 @@
 import { Injectable } from '@nestjs/common';
-import { CreateMessageDto } from './dto/create-message.dto';
-import { UpdateMessageDto } from './dto/update-message.dto';
+import { CreateMessageDto } from '../dto/create-message.dto';
+import { UpdateMessageDto } from '../dto/update-message.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
-import { Message } from './entities/message.entity';
+import { Message } from '../entities/message.entity';
 import { User } from '@/user/entities/user.entity';
 import { Chat } from '@/chat/entities/chat.entity';
+import { ChatMessageEvents } from '@/message/types/chatMessageEvents';
+import { MessageSocketEventsService } from '@/message/services/message-socket-events.service';
 
 @Injectable()
 export class MessageService {
   constructor(
     @InjectRepository(Message) private messageRepository: Repository<Message>,
+    private readonly messageSocketEventsService: MessageSocketEventsService,
   ) {}
+
   async create(payload: CreateMessageDto, chatId, authorId) {
     const author = new User();
     author.id = authorId;
@@ -22,7 +26,12 @@ export class MessageService {
       chat,
       author,
     });
-    return await this.findOne(savedMessage.id);
+    const message = await this.findOne(savedMessage.id);
+    this.messageSocketEventsService.sendToMembers(
+      ChatMessageEvents.NewMessage,
+      message,
+    );
+    return message;
   }
 
   findAll(chatId: number) {
@@ -48,7 +57,9 @@ export class MessageService {
       relationLoadStrategy: 'join',
       relations: {
         views: true,
-        chat: true,
+        chat: {
+          members: true,
+        },
         author: true,
       },
     });
@@ -65,11 +76,23 @@ export class MessageService {
     }
 
     await this.messageRepository.save(currentMessage);
-    return this.messageRepository.findOneByOrFail({ id });
+    const message = await this.messageRepository.findOneByOrFail({ id });
+    this.messageSocketEventsService.sendToSender(
+      ChatMessageEvents.ViewMessage,
+      message,
+    );
+    return message;
   }
 
-  update(id: number, payload: UpdateMessageDto) {
-    return this.messageRepository.update(id, payload);
+  async update(id: number, payload: UpdateMessageDto) {
+    await this.messageRepository.update(id, payload);
+    const message = await this.findOne(id);
+
+    this.messageSocketEventsService.sendToMembers(
+      ChatMessageEvents.UpdateMessage,
+      message,
+    );
+    return message;
   }
 
   async getUnreadMessages(userId: number) {
@@ -91,6 +114,11 @@ export class MessageService {
 
   async remove(id: number) {
     const message = await this.messageRepository.findOneByOrFail({ id });
+
+    this.messageSocketEventsService.sendToMembers(
+      ChatMessageEvents.DeleteMessage,
+      message,
+    );
     return await this.messageRepository.remove(message);
   }
 }

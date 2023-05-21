@@ -8,6 +8,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeormConfigService } from '@/shared/services/typeorm-config.service';
 import { RequestUserMiddleware } from '@/shared/middleware/request-user.middleware';
 import { RequestUserService } from '@/shared/services/request-user.service';
+import { SocketModule } from '@/shared/gateways/socket.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { RequestUserService } from '@/shared/services/request-user.service';
     MessageModule,
     ChatModule,
     UserModule,
+    SocketModule,
   ],
   providers: [RequestUserService],
   exports: [RequestUserService],
